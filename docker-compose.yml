@@ -1,0 +1,25 @@
+version: '2'
+
+# To build the docker image:
+# $ docker-compose build
+#
+# To start all services (start populated postgis database, start renderd, start apache):
+# $ docker-compose up -d
+#
+# To start the update daemon:
+# NOTE: It looks like the fetch_osc.sh script is hardcoded to check for (minutely) updates every 15 sec.
+# This makes running the update script as a daemon with daily replications an overkill (since they'll be checked every 15 sec).
+# At the time being it is better to run the below commands on the foreground (i.e without &) only when it is necessary to update the maps.
+# Full instructions: http://wiki.openstreetmap.org/wiki/Overpass_API/Installation#Applying_minutely_.28or_hourly.2C_or_daily.29_diffs
+# 1). Enter the running container: $ docker exec -i -t <container_id> /bin/bash
+# 2). $ mkdir -d /srv/osm3s/replicate_dir
+# 3). $ nohup /srv/osm3s/bin/fetch_osc.sh <sequence_number_of_replication_file> http://planet.openstreetmap.org/replication/day/ /srv/osm3s/replicate_dir &
+# 4). If all went fine, exit from the /bin/bash environment. The container should be still running.
+# NOTE: The update daemon should be restarted each time the container is restarted or only when it is necessary to manually update the maps.
+
+services:
+  app-overpass:
+    build: .
+    image: pesho-k/overpass-api-docker
+    ports:
+      - '82:80'
